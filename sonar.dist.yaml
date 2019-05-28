@@ -1,0 +1,15 @@
+sonar:
+  room: kitchen
+  interval: 5
+
+mqtt:
+  host: mqtt_broker.address
+  username: username
+  password: password
+  tls: true
+  port: 8883
+  topic: presence/
+
+devices:
+  - bt_mac_1
+  - bt_mac_2

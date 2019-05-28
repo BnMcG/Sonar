@@ -107,7 +107,7 @@ def listen():
                 }
 
                 mqtt_client.publish(
-                    topic=f"{config['mqtt']['topic']}",
+                    topic=config['mqtt']['topic'],
                     payload=json.dumps(payload))
 
             time.sleep(config['sonar']['interval'])

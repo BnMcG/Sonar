@@ -1,5 +1,4 @@
 FROM python:3
-RUN apt update && apt install gcc libc-dev
 ENV PYTHONUNBUFFERED 1
 RUN mkdir /sonar
 WORKDIR /sonar

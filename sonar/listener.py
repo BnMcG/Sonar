@@ -10,6 +10,7 @@ import time
 import sys
 import json
 import datetime
+import threading
 
 
 class BluetoothRSSI(object):
@@ -65,6 +66,28 @@ class BluetoothRSSI(object):
             return None
 
 
+def ping(device_address, mqtt_client, config):
+    device_query = BluetoothRSSI(device_address)
+    rssi_data = device_query.request_rssi()
+    print(device_address + ": " + str(rssi_data))
+
+    if rssi_data is None:
+        rssi = -999
+    else:
+        rssi = rssi_data[0]
+
+    payload = {
+        'timestamp': datetime.datetime.now().timestamp(),
+        'rssi': rssi,  # Nonsensical value if device not found
+        'device': device_address,
+        'sonar': config['sonar']['name']
+    }
+
+    mqtt_client.publish(
+        topic=config['mqtt']['topic'],
+        payload=json.dumps(payload))
+
+
 def listen():
     # Load configuration
     script_directory = os.path.dirname(os.path.realpath(__file__))
@@ -90,25 +113,8 @@ def listen():
     while True:
         try:
             for device_address in config['devices']:
-                device_query = BluetoothRSSI(device_address)
-                rssi_data = device_query.request_rssi()
-                print(rssi_data)
+                threading.Thread(target=ping, args=(device_address, mqtt_client, config), daemon=True).start()
 
-                if rssi_data is None:
-                    rssi = -999
-                else:
-                    rssi = rssi_data[0]
-
-                payload = {
-                    'timestamp': datetime.datetime.now().timestamp(),
-                    'rssi': rssi,  # Nonsensical value if device not found
-                    'device': device_address,
-                    'sonar': config['sonar']['name']
-                }
-
-                mqtt_client.publish(
-                    topic=config['mqtt']['topic'],
-                    payload=json.dumps(payload))
 
             time.sleep(config['sonar']['interval'])
         except KeyboardInterrupt:

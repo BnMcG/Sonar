@@ -1,0 +1,13 @@
+[Unit]
+Description=Sonar
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/Sonar
+ExecStart=/home/pi/Sonar/venv/bin/python3 -m sonar.listener
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target

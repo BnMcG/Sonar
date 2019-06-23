@@ -1,0 +1,9 @@
+version: "3.7"
+services:
+  sonar:
+    restart: always
+    network_mode: host
+    build:
+      network: host
+      context: ./
+      dockerfile: ./Dockerfile
